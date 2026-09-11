@@ -27,12 +27,26 @@ public class TaskService {
         return List.copyOf(tasks);
     }
 
-    public List<Task> filterByPriority(Priority priority) {
-        if (priority == null) {
-            throw new IllegalArgumentException("筛选优先级不能为空");
+    /**
+     * 根据id完成任务
+     * @param id 任务编号
+     * @throws IllegalArgumentException id不存在
+     * @throws IllegalStateException 任务已经完成，禁止重复完成
+     */
+    public void completeTask(long id) {
+        Task target = null;
+        for (Task t : tasks) {
+            if (t.getId() == id) {
+                target = t;
+                break;
+            }
         }
-        return tasks.stream()
-                .filter(task -> task.getPriority() == priority)
-                .toList();
+        if (target == null) {
+            throw new IllegalArgumentException("任务id不存在：" + id);
+        }
+        if (target.isCompleted()) {
+            throw new IllegalStateException("任务已经完成，不可重复完成, id=" + id);
+        }
+        target.setCompleted(true);
     }
 }
